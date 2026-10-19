@@ -14,21 +14,40 @@
 <div class="admin wide" id="editor" hidden><h2>Edit website</h2>
 <p class="note">1) Change the fields and press Save preview to see the changes in this browser. 2) Press Download content.js and upload it to your website (GitHub), replacing the old content.js. Then every visitor sees the changes.</p>
 <div id="fields" style="display:grid;gap:12px"></div>
+<h3 style="margin-top:14px">Pricing</h3>
+<p class="note">Add, edit, reorder or delete prices here. They appear on the Home page, the Pricing page and in the booking form's service list.</p>
+<div id="pm" style="display:grid;gap:12px"></div>
+<div><button class="btn hot" id="addp" type="button">+ Add new price</button></div>
 <div class="btns"><button class="btn hot" id="sv" type="button">Save preview</button><button class="btn" id="dl" type="button">Download content.js</button><button class="btn" id="rs" type="button">Discard preview</button><button class="btn" id="lo" type="button">Log out</button></div><p class="note" id="msg"></p></div></main>
 <div id="ftr"></div>
 <script src="content.js"></script><script src="site.js"></script><script>
 var H="c0d68ff9eebe1b034a3ac746a09528388870d4baa6f7fa31b941bc61a139c204";
-var FIELDS=[["name","Business name"],["tagline","Tagline"],["phone","Phone (10 digits)"],["whatsapp","WhatsApp number (10 digits)"],["email","Email"],["owner","Owner name"],["address","Address"],["hours","Business hours"],["hero","Home page headline","a2"],["lead","Home page intro","a3"],["cities","Cities (comma separated)"],["services","Services (one per line: Title | Description)","L2",9],["pricing","Prices (one per line: Service | Price | Note | Optional label)","L4",11],["pricingNote","Extra-cost note","a3"],["diagPolicy","Diagnosis charge policy","a3"],["reviews","Customer reviews (one per line: Name | Review)","L2",5]];
+var FIELDS=[["name","Business name"],["tagline","Tagline"],["phone","Phone (10 digits)"],["whatsapp","WhatsApp number (10 digits)"],["email","Email"],["owner","Owner name"],["address","Address"],["hours","Business hours"],["hero","Home page headline","a2"],["lead","Home page intro","a3"],["cities","Cities (comma separated)"],["services","Services (one per line: Title | Description)","L2",9],["pricingNote","Extra-cost note","a3"],["diagPolicy","Diagnosis charge policy","a3"],["reviews","Customer reviews (one per line: Name | Review)","L2",5]];
 function $(i){return document.getElementById(i)}
+var P=[];
+function inp(lab,val,ph,area,fn){var l=document.createElement('label');l.textContent=lab;var i=document.createElement(area?'textarea':'input');if(area)i.rows=2;i.value=val||'';if(ph)i.placeholder=ph;i.oninput=function(){fn(i.value)};l.appendChild(i);return l}
+function pbtn(t,fn){var b=document.createElement('button');b.type='button';b.className='btn sm';b.textContent=t;b.onclick=fn;return b}
+function mv(i,d){var j=i+d;if(j<0||j>=P.length)return;var t=P[i];P[i]=P[j];P[j]=t;renderP()}
+function renderP(){var b=$('pm');b.textContent='';P.forEach(function(x,i){var c=document.createElement('div');c.className='prow';var g=document.createElement('div');g.className='two';
+g.appendChild(inp('Service name',x[0],'',0,function(v){x[0]=v}));g.appendChild(inp('Price',x[1],'e.g. \u20b9299',0,function(v){x[1]=v}));c.appendChild(g);
+c.appendChild(inp('Label above price (optional)',x[3],'Starting from',0,function(v){x[3]=v}));
+c.appendChild(inp('Short note',x[2],'',1,function(v){x[2]=v}));
+var a=document.createElement('div');a.className='btns';
+a.appendChild(pbtn('Move up',function(){mv(i,-1)}));a.appendChild(pbtn('Move down',function(){mv(i,1)}));
+a.appendChild(pbtn('Delete',function(){if(confirm('Delete "'+(x[0]||'this price')+'"?')){P.splice(i,1);renderP()}}));
+c.appendChild(a);b.appendChild(c)});
+if(!P.length){var e=document.createElement('p');e.className='note';e.textContent='No prices yet. Press "Add new price".';b.appendChild(e)}}
+function chk(){for(var i=0;i<P.length;i++){var x=P[i];if(!(x[0]||'').trim())return 'Price '+(i+1)+' needs a service name (or delete it).';if(!(x[1]||'').trim())return 'Please enter a price for "'+x[0]+'".'}return ''}
+$('addp').onclick=function(){P.push(['','','','']);renderP();var r=$('pm').querySelectorAll('.prow input');var n=$('pm').querySelectorAll('.prow').length;if(n)$('pm').lastElementChild.querySelector('input').focus()};
 function sha(s){return crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)).then(function(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,'0')}).join('')})}
 function build(){var b=$('fields');if(b.children.length)return;FIELDS.forEach(function(f){var d=document.createElement('div'),l=document.createElement('label'),t=f[2]||'',i=document.createElement(t?'textarea':'input');l.textContent=f[1];l.htmlFor='f_'+f[0];i.id='f_'+f[0];if(t)i.rows=f[3]||parseInt(t.slice(1));d.appendChild(l);d.appendChild(i);b.appendChild(d)})}
-function fill(){build();var S=window.SITE;FIELDS.forEach(function(f){var v=S[f[0]],t=f[2]||'';if(f[0]=='cities')v=(v||[]).join(', ');else if(t[0]=='L')v=(v||[]).map(function(r){return r.join(' | ').replace(/( \| )+$/,'')}).join('\n');$('f_'+f[0]).value=v||''})}
-function collect(){var o={};FIELDS.forEach(function(f){var v=$('f_'+f[0]).value.trim(),t=f[2]||'';if(f[0]=='cities')v=v.split(',').map(function(x){return x.trim()}).filter(Boolean);else if(t[0]=='L'){var n=parseInt(t.slice(1));v=v.split('\n').filter(function(x){return x.trim()}).map(function(x){var p=x.split('|').map(function(y){return y.trim()}),r=p.slice(0,n-1);r.push(p.slice(n-1).join(' | '));while(r.length<n)r.push('');return r})}o[f[0]]=v});return o}
+function fill(){build();var S=window.SITE;P=(S.pricing||[]).map(function(r){return [r[0]||'',r[1]||'',r[2]||'',r[3]||'']});renderP();FIELDS.forEach(function(f){var v=S[f[0]],t=f[2]||'';if(f[0]=='cities')v=(v||[]).join(', ');else if(t[0]=='L')v=(v||[]).map(function(r){return r.join(' | ').replace(/( \| )+$/,'')}).join('\n');$('f_'+f[0]).value=v||''})}
+function collect(){var o={};FIELDS.forEach(function(f){var v=$('f_'+f[0]).value.trim(),t=f[2]||'';if(f[0]=='cities')v=v.split(',').map(function(x){return x.trim()}).filter(Boolean);else if(t[0]=='L'){var n=parseInt(t.slice(1));v=v.split('\n').filter(function(x){return x.trim()}).map(function(x){var p=x.split('|').map(function(y){return y.trim()}),r=p.slice(0,n-1);r.push(p.slice(n-1).join(' | '));while(r.length<n)r.push('');return r})}o[f[0]]=v});o.pricing=P.map(function(x){return [x[0].trim(),x[1].trim(),x[2].trim(),x[3].trim()]});return o}
 function show(){$('login').hidden=true;$('editor').hidden=false;fill()}
 if(sessionStorage.getItem('cf-auth')==='1')show();
 $('lf').onsubmit=function(e){e.preventDefault();sha('clickfix|'+$('u').value+'|'+$('pw').value).then(function(h){if(h===H){sessionStorage.setItem('cf-auth','1');show()}else $('err').textContent='Wrong username or password.'}).catch(function(){$('err').textContent='Login needs a secure (https) page.'})};
-$('sv').onclick=function(){try{localStorage.setItem('cf-preview',JSON.stringify(collect()));$('msg').textContent='Saved. Open the other pages in this browser to preview.'}catch(e){$('msg').textContent='Could not save.'}};
-$('dl').onclick=function(){var t='window.SITE_DEFAULTS='+JSON.stringify(collect(),null,1)+';\n',a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/javascript'}));a.download='content.js';a.click()};
+$('sv').onclick=function(){var pe=chk();if(pe){$('msg').textContent=pe;return}try{localStorage.setItem('cf-preview',JSON.stringify(collect()));$('msg').textContent='Saved. Open the other pages in this browser to preview.'}catch(e){$('msg').textContent='Could not save.'}};
+$('dl').onclick=function(){var pe=chk();if(pe){$('msg').textContent=pe;return}var t='window.SITE_DEFAULTS='+JSON.stringify(collect(),null,1)+';\n',a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/javascript'}));a.download='content.js';a.click()};
 $('rs').onclick=function(){try{localStorage.removeItem('cf-preview')}catch(e){}location.reload()};
 $('lo').onclick=function(){sessionStorage.removeItem('cf-auth');location.reload()};
 </script>
