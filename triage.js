@@ -8,5 +8,5 @@ var fixes={"Slow computer":["Online first","We clean up startup items, junk and 
 var chips=document.getElementById('chips'),ans=document.getElementById('answer');
 Object.keys(fixes).forEach(function(k){var b=document.createElement('button');b.className='chip';b.type='button';b.textContent=k;b.setAttribute('aria-pressed','false');
 b.onclick=function(){[].forEach.call(chips.children,function(c){c.setAttribute('aria-pressed','false')});b.setAttribute('aria-pressed','true');
-var f=fixes[k];ans.innerHTML='<b></b><p></p><div class="row"><a class="btn hot" href="tel:+91'+PHONE+'">Call now</a><a class="btn" href="#contact">Describe the problem</a></div>';
+var f=fixes[k];ans.innerHTML='<b></b><p></p><div class="row"><a class="btn hot" href="tel:+91'+PHONE+'">Call now</a><a class="btn wa" target="_blank" rel="noopener" href="https://wa.me/91'+PHONE+'?text='+encodeURIComponent('Hello, I need help with: '+k)+'">'+(window.WA_SVG||'')+'<span>WhatsApp</span></a></div>';
 ans.querySelector('b').textContent=f[0]+': '+k;ans.querySelector('p').textContent=f[1];};chips.appendChild(b);});

@@ -65,3 +65,12 @@ footer{padding:28px 0 44px;color:var(--mute);font-size:15px}
 .note{color:var(--mute);font-size:15px;margin:0}.err{color:#ff7b7b;font-weight:600;margin:0}
 .btns{display:flex;gap:10px;flex-wrap:wrap}
 @media(max-width:760px){.svc,.modes,.steps,.contact .grid{grid-template-columns:1fr}}
+
+.btn.wa{background:#25d366;border-color:#25d366;color:#031027;font-weight:700;display:inline-flex;align-items:center;gap:8px}
+.btn.wa:hover{border-color:#fff}
+.wafloat{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:60px;height:60px;border-radius:50%;background:#25d366;color:#fff;display:flex;align-items:center;justify-content:center;z-index:50;box-shadow:0 6px 22px rgba(0,0,0,.45)}
+.wafloat svg{width:34px;height:34px}
+.watip{position:fixed;right:88px;bottom:calc(26px + env(safe-area-inset-bottom,0px));background:#fff;color:#0b1e3f;padding:10px 14px;border-radius:14px;font-weight:600;font-size:15px;line-height:1.35;z-index:50;box-shadow:0 6px 22px rgba(0,0,0,.35);opacity:0;transform:translateX(12px);pointer-events:none;transition:opacity .35s,transform .35s;max-width:200px}
+.watip.show{opacity:1;transform:none}
+@media(prefers-reduced-motion:no-preference){.wafloat::after{content:"";position:absolute;inset:0;border-radius:50%;border:3px solid #25d366;animation:ring 2s infinite}}
+@keyframes ring{from{transform:scale(1);opacity:.8}to{transform:scale(1.6);opacity:0}}
